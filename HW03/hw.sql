@@ -13,13 +13,13 @@ Select
 	YEAR (i.InvoiceDate) as yearInvoice
 	,MONTH (i.InvoiceDate) as MonthInvoice 
 	,avg(il.UnitPrice)as avgPrice
-	,sum(il.ExtendedPrice)as sumInvoice
+	,sum(il.UnitPrice * il.Quantity)as sumInvoice
 From Sales.Invoices i
 left join sales.InvoiceLines il
 on i.InvoiceID = il.InvoiceID
 Group by YEAR (i.InvoiceDate),MONTH (i.InvoiceDate)
 Order by YEAR (i.InvoiceDate),MONTH (i.InvoiceDate)
-
+;
 
 /*
 2. Отобразить все месяцы, где общая сумма продаж превысила 10 000
@@ -34,12 +34,12 @@ Order by YEAR (i.InvoiceDate),MONTH (i.InvoiceDate)
 Select 
 	YEAR (i.InvoiceDate) as yearInvoice
 	,MONTH (i.InvoiceDate) as MonthInvoice 
-	,sum(il.ExtendedPrice)as sumInvoice
+	,sum(il.UnitPrice * il.Quantity)as sumInvoice
 From Sales.Invoices i
 left join sales.InvoiceLines il
 on i.InvoiceID = il.InvoiceID
 Group by YEAR (i.InvoiceDate),MONTH (i.InvoiceDate)
-Having sum(il.ExtendedPrice)>10000
+Having sum(il.UnitPrice * il.Quantity)>10000
 union 
 Select 
 	YEAR (i.InvoiceDate) as yearInvoice
@@ -49,9 +49,9 @@ From Sales.Invoices i
 left join sales.InvoiceLines il
 on i.InvoiceID = il.InvoiceID
 Group by YEAR (i.InvoiceDate),MONTH (i.InvoiceDate)
-Having sum(il.ExtendedPrice)<10000
+Having sum(il.UnitPrice * il.Quantity)<10000
 Order by YEAR (i.InvoiceDate),MONTH (i.InvoiceDate)
-
+;
 
 /*
 3. Вывести сумму продаж, дату первой продажи
@@ -71,7 +71,7 @@ Select
 	YEAR (i.InvoiceDate) as yearInvoice
 	,MONTH (i.InvoiceDate) as MonthInvoice 
 	,si.StockItemName
-	,sum(il.ExtendedPrice)as sumInvoice
+	,sum(il.UnitPrice * il.Quantity)as sumInvoice
 	,min(i.InvoiceDate) as firstDateInvoice
 	,Sum(il.Quantity) as SumQuantity
 From Sales.Invoices i
@@ -97,3 +97,4 @@ on si.StockItemID = il.StockItemID
 Group by YEAR (i.InvoiceDate),MONTH (i.InvoiceDate),StockItemName
 Having Sum(il.Quantity)>50
 Order by YEAR (i.InvoiceDate),MONTH (i.InvoiceDate)
+;
