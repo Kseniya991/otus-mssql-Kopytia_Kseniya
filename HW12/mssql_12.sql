@@ -51,9 +51,9 @@ AS
     SET NOCOUNT ON; 
 	IF @SearchID IS NULL  
 	BEGIN  
-	   PRINT N'ОШИБКА: Неоходимо передать идентификатор покупателя.'  
+	   THROW 50000, 'ОШИБКА: Неоходимо передать идентификатор покупателя.' ,1
 	   RETURN 
-	END     
+	END        
 	Select 
 		i.CustomerID, 
 		c.CustomerName,
