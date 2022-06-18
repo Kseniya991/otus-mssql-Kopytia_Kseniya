@@ -1,3 +1,50 @@
+USE master
+ALTER DATABASE WideWorldImporters
+
+SET ENABLE_BROKER; 
+
+ALTER DATABASE WideWorldImporters SET TRUSTWORTHY ON;
+
+ALTER AUTHORIZATION    
+   ON DATABASE::WideWorldImporters TO [sa];
+
+--создание контракта и типов сообщений
+
+USE WideWorldImporters
+-- For Request
+CREATE MESSAGE TYPE
+[//WWI/SB/RequestMessage]
+VALIDATION=WELL_FORMED_XML;
+-- For Reply
+CREATE MESSAGE TYPE
+[//WWI/SB/ReplyMessage]
+VALIDATION=WELL_FORMED_XML; 
+
+GO
+
+CREATE CONTRACT [//WWI/SB/Contract]
+      ([//WWI/SB/RequestMessage]
+         SENT BY INITIATOR,
+       [//WWI/SB/ReplyMessage]
+         SENT BY TARGET
+      );
+GO
+
+-- создание очередей
+CREATE QUEUE TargetQueueWWI;
+
+CREATE SERVICE [//WWI/SB/TargetService]
+       ON QUEUE TargetQueueWWI
+       ([//WWI/SB/Contract]);
+GO
+
+
+CREATE QUEUE InitiatorQueueWWI;
+
+CREATE SERVICE [//WWI/SB/InitiatorService]
+       ON QUEUE InitiatorQueueWWI
+       ([//WWI/SB/Contract]);
+GO
 --создаем таблицу куда складываем данные при обработке очереди 
 CREATE TABLE sales.cust_orders_cnt
 (
