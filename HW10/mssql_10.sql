@@ -56,7 +56,7 @@ CREATE TABLE order_lines(
 	quantity decimal(18,2) not null,
 	unit_price decimal(18,2) not null,
 	total_sum decimal(18,2) not null,
-	currency_cd int not  null,
+	currency_id int not  null,
 	CONSTRAINT FK_order_id FOREIGN KEY (order_id)
     REFERENCES orders(order_id),
 	CONSTRAINT FK_product_id FOREIGN KEY (product_id)
