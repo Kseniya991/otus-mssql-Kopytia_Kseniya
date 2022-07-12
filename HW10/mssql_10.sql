@@ -71,7 +71,7 @@ ADD CONSTRAINT check_customer
 
 ALTER TABLE orders
 ADD CONSTRAINT check_delivery_dt
-  CHECK (datediff(mm, delivery_dt, getdate()) <=3);
+  CHECK (datediff(mm, delivery_dt, order_dttm) <=3);
 
 ALTER TABLE order_lines
 ADD CONSTRAINT check_total_sum
