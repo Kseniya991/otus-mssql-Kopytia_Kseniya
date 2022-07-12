@@ -45,7 +45,7 @@ CREATE UNIQUE INDEX name_adress ON dbo.customers (customer_name asc, customer_ad
 --Индексы для таблицы Строки заказа (order_lines)
 --Колоночный индекс
 create columnstore index ix_sum_order
-on dbo.order_lines (total_sum,currency_cd)
+on dbo.order_lines (total_sum,currency_id)
 go
 ;
 
