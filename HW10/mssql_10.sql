@@ -44,6 +44,7 @@ CREATE TABLE orders(
 	delivery_dt date not null,
 	delivery_address varchar(max) not null,
 	comments varchar(max) null,
+	order_type_id int not null,
 	CONSTRAINT FK_customer_id FOREIGN KEY (customer_id)
     REFERENCES customers(customer_id)
 );
