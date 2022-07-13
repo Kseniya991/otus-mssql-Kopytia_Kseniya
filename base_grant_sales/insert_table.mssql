@@ -1,0 +1,371 @@
+USE [base_grant_sales]
+GO
+
+INSERT INTO [dbo].[product_type]
+           ([product_type_nm])
+     VALUES
+           ('готовое изделие'),
+		   ('материал'),
+		   ('услуга')
+GO
+
+
+USE [base_grant_sales]
+GO
+
+INSERT INTO [dbo].[order_type]
+           ([order_type_nm])
+     VALUES
+           ('с/х'),
+		   ('культовый'),
+		   ('—‘Ѕ'),
+		   ('мебель √рант+'),
+		   ('спорт инвентарь √рант+'),
+		   ('прочее √рант+')
+GO
+
+
+USE [base_grant_sales]
+GO
+
+INSERT INTO [dbo].[delivery_method]
+           ([delivery_method_nm])
+     VALUES
+           ('самовывоз'),
+		   ('доставка'),
+		   ('доставка крупногабаритных изделий')
+GO
+
+
+USE [base_grant_sales]
+GO
+
+INSERT INTO [dbo].[currency]
+           ([currency_nm])
+     VALUES
+           ('руб'),
+		   ('usd'),
+		   ('eur'),
+		   ('cny')
+GO
+
+
+/****** Скрипт для команды SelectTopNRows из среды SSMS  ******/
+USE [base_grant_sales]
+GO
+SELECT * FROM [base_grant_sales].[dbo].[orders];
+SELECT *  FROM [base_grant_sales].[dbo].[products];
+SELECT *  FROM [dbo].[order_type];
+
+
+USE [base_grant_sales]
+GO
+
+INSERT INTO [dbo].[order_lines]
+           ([order_id]
+           ,[product_id]
+           ,[quantity]
+           ,[unit_price]
+           ,[total_sum]
+           ,[currency_id])
+     VALUES
+           (23
+		   ,9
+           ,3
+           ,75000
+           ,225000
+           ,1),
+		   (24
+		   ,10
+           ,1
+           ,550000
+           ,550000
+           ,1),		   
+		   (24
+		   ,10
+           ,1
+           ,550000
+           ,550000
+           ,1),
+		   (25
+		   ,11
+           ,3
+           ,100000
+           ,300000
+           ,1),
+		   (25
+		   ,11
+           ,3
+           ,100000
+           ,300000
+           ,1),
+		   (26
+		   ,10
+           ,2
+           ,100000
+           ,200000
+           ,1),		   
+		   (27
+		   ,4
+           ,2
+           ,10000
+           ,20000
+           ,1),
+		   (27
+		   ,8
+           ,2
+           ,12000
+           ,24000
+           ,1),
+		   (28
+		   ,1
+           ,2
+           ,12000
+           ,24000
+           ,1),
+		   (29
+		   ,7
+           ,3
+           ,12000
+           ,24000
+           ,1),
+		   (30
+		   ,7
+           ,2
+           ,12000
+           ,24000
+           ,1),
+		   (31
+		   ,8
+           ,2
+           ,12000
+           ,24000
+           ,1)
+GO
+
+
+USE [base_grant_sales]
+GO
+
+INSERT INTO [dbo].[customers]
+           ([customer_name]
+           ,[customer_address]
+           ,[contract_id])
+     VALUES
+           ('ИП Серебряков'
+           ,'г.Ростов-на-Дону, ул.Ленина, д.79'
+           ,5),
+		   ('ИП Озерный'
+           ,'г.Москва, ул.Ленина, д.6'
+           ,2),
+		    ('ООО Кишинев'
+           ,'г.Воронеж, ул.Мирная, д.75'
+           ,3),
+		   ('ООО Вишнев'
+           ,'г.Суздаль, ул.Мирная, д.24'
+           ,4)
+GO
+
+
+USE [base_grant_sales]
+GO
+
+INSERT INTO [dbo].[product_category]
+           ([product_category_nm])
+     VALUES
+           ('сельхоз продукция'),
+		   ('культовая продукция'),
+		   ('СФБ продукция'),
+		   ('мебельная продукция'),
+		   ('спортивный инвентарь'),
+		   ('лодки')
+GO
+
+
+USE [base_grant_sales]
+GO
+Select * from [dbo].[product_type];
+Select * from [dbo].[product_category];
+
+
+
+USE [base_grant_sales]
+GO
+
+INSERT INTO [dbo].[products]
+           ([product_name]
+           ,[weight_per_unit]
+           ,[product_category_id]
+           ,[product_type_id]
+           ,[unit])
+     VALUES
+           ('Дробилка ДМ-500'
+           ,100
+           ,1
+           ,1
+           ,'кг'),
+		   ('Купол r=450'
+           ,55
+           ,2
+           ,1
+           ,'кг'),
+		   ('Иконостас d-808'
+           ,1200
+           ,2
+           ,1
+           ,'кг'),
+		   ('Стул офисный обычны'
+           ,15
+           ,4
+           ,1
+           ,'кг'),
+		   ('украшение фасада'
+           ,10
+           ,3
+           ,1
+           ,'кг'),
+		   ('Смеситель горизонтальный СГ-3'
+           ,150
+           ,1
+           ,1
+           ,'кг'),
+		   ('Икона позолоченная'
+           ,2
+           ,2
+           ,1
+           ,'кг')
+GO
+
+
+
+USE [base_grant_sales]
+GO
+
+Select * from [dbo].[order_type];
+Select * from [dbo].[customers];
+
+INSERT INTO [dbo].[orders]
+           ([order_dttm]
+           ,[customer_id]
+           ,[delivery_cd]
+           ,[delivery_dt]
+           ,[delivery_address]
+           ,[comments]
+           ,[order_type_id])
+     VALUES
+           ('07.01.2022'
+           ,4
+           ,2
+           ,'17.03.2022'
+           ,'г.Ростов-на-Дону, ул.Ленина, д.8'
+           ,''
+           ,3),
+		  ('16.01.2022'
+           ,2
+           ,2
+           ,'27.04.2022'
+           ,'г.Ростов-на-Дону, ул.Ленина, д.8'
+           ,''
+           ,1),
+		   ('06.02.2022'
+           ,2
+           ,2
+           ,'07.04.2022'
+           ,'г.Ростов-на-Дону, ул.Ленина, д.8'
+           ,''
+           ,2),
+		   ('09.02.2022'
+           ,2
+           ,2
+           ,'27.04.2022'
+           ,'г.Ростов-на-Дону, ул.Ленина, д.8'
+           ,''
+           ,1),
+		   ('19.02.2022'
+           ,2
+           ,2
+           ,'07.04.2022'
+           ,'г.Ростов-на-Дону, ул.Ленина, д.8'
+           ,''
+           ,4),
+		   ('12.03.2022'
+           ,2
+           ,2
+           ,'31.05.2022'
+           ,'г.Ростов-на-Дону, ул.Ленина, д.8'
+           ,''
+           ,1),
+		   ('22.03.2022'
+           ,5
+           ,2
+           ,'15.06.2022'
+           ,'г.Москва, ул.Ленина, д.6'
+           ,''
+           ,2),
+		   ('11.04.2022'
+           ,4
+           ,2
+           ,'31.05.2022'
+           ,'г.Ростов-на-Дону, ул.Ленина, д.79'
+           ,''
+           ,2),
+		   ('11.06.2022'
+           ,5
+           ,2
+           ,'31.07.2022'
+           ,'г.Москва, ул.Ленина, д.6'
+           ,''
+           ,4)
+GO
+
+
+USE [base_grant_sales]
+GO
+
+INSERT INTO [dbo].[customer_contracts]
+           ([contract_dt]
+           ,[contract_dsc])
+     VALUES
+           ('01.01.2022'
+           ,'покупка дробилки и сх техники')
+GO
+
+INSERT INTO [dbo].[customer_contracts]
+           ([contract_dt]
+           ,[contract_dsc])
+     VALUES
+           ('02.01.2022'
+           ,'покупка купола и облицовка')
+GO
+
+INSERT INTO [dbo].[customer_contracts]
+           ([contract_dt]
+           ,[contract_dsc])
+     VALUES
+           ('03.01.2022'
+           ,'покупка креслаи установка')
+GO
+
+INSERT INTO [dbo].[customer_contracts]
+           ([contract_dt]
+           ,[contract_dsc])
+     VALUES
+           ('04.01.2022'
+           ,'покупка дробилки и сх техники')
+GO
+
+INSERT INTO [dbo].[customer_contracts]
+           ([contract_dt]
+           ,[contract_dsc])
+     VALUES
+           ('05.01.2022'
+           ,'покупка купола и облицовка')
+GO
+
+INSERT INTO [dbo].[customer_contracts]
+           ([contract_dt]
+           ,[contract_dsc])
+     VALUES
+           ('06.01.2022'
+           ,'покупка креслаи установка')
+GO
