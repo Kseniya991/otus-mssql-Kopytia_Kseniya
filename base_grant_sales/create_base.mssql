@@ -1,0 +1,337 @@
+---Создание базы данных 
+CREATE DATABASE [base_grant_sales]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = base_grant_sales, FILENAME = N'C:\base\base_grant_sales.mdf' , 
+	SIZE = 8MB , 
+	MAXSIZE = UNLIMITED, 
+	FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = base_grant_sales_log, FILENAME = N'C:\base\base_grant_sales_log.ldf' , 
+	SIZE = 8MB , 
+	MAXSIZE = 10GB , 
+	FILEGROWTH = 65536KB )
+GO
+
+---- Создание таблиц
+use base_grant_sales;
+GO
+
+CREATE TABLE [dbo].[currency](
+	[currency_id] [int] IDENTITY(1,1) NOT NULL,
+	[currency_nm] [varchar](255) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[currency_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO;
+
+CREATE TABLE [dbo].[customer_contracts](
+	[contract_id] [int] IDENTITY(1,1) NOT NULL,
+	[contract_dt] [datetime] NOT NULL,
+	[contract_dsc] [varchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[contract_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO;
+
+CREATE TABLE [dbo].[customers](
+	[customer_id] [int] IDENTITY(1,1) NOT NULL,
+	[customer_name] [varchar](255) NOT NULL,
+	[customer_address] [varchar](255) NULL,
+	[contract_id] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[customer_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[customers]  WITH CHECK ADD  CONSTRAINT [FK_contract_id] FOREIGN KEY([contract_id])
+REFERENCES [dbo].[customer_contracts] ([contract_id])
+GO
+
+ALTER TABLE [dbo].[customers] CHECK CONSTRAINT [FK_contract_id]
+GO
+
+ALTER TABLE [dbo].[customers]  WITH CHECK ADD  CONSTRAINT [check_customer] CHECK  ((NOT ([customer_name]='ГРАНТ-ПЛЮС' OR [customer_name]='ЗАО ИЦ ГРАНТ' OR [customer_name]='Грант')))
+GO
+
+ALTER TABLE [dbo].[customers] CHECK CONSTRAINT [check_customer]
+GO
+
+CREATE TABLE [dbo].[delivery_method](
+	[delivery_method_id] [int] IDENTITY(1,1) NOT NULL,
+	[delivery_method_nm] [varchar](255) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[delivery_method_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[entity_customers](
+	[entity_cust_id] [int] IDENTITY(1,1) NOT NULL,
+	[entity_cust_nm] [varchar](255) NOT NULL,
+	[state_reg_number] [varchar](255) NOT NULL,
+	[state_reg_dt] [date] NOT NULL,
+	[ownership_code] [varchar](255) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[entity_cust_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[entity_customers]  WITH CHECK ADD  CONSTRAINT [FK_entity_cust_id] FOREIGN KEY([entity_cust_id])
+REFERENCES [dbo].[customers] ([customer_id])
+GO
+
+ALTER TABLE [dbo].[entity_customers] CHECK CONSTRAINT [FK_entity_cust_id]
+GO
+
+CREATE TABLE [dbo].[order_lines](
+	[order_line_id] [int] IDENTITY(1,1) NOT NULL,
+	[order_id] [int] NOT NULL,
+	[product_id] [int] NOT NULL,
+	[quantity] [decimal](18, 2) NOT NULL,
+	[unit_price] [decimal](18, 2) NOT NULL,
+	[total_sum] [decimal](18, 2) NOT NULL,
+	[currency_id] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[order_line_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[order_lines]  WITH CHECK ADD  CONSTRAINT [FK_currency_id] FOREIGN KEY([currency_id])
+REFERENCES [dbo].[currency] ([currency_id])
+GO
+
+ALTER TABLE [dbo].[order_lines] CHECK CONSTRAINT [FK_currency_id]
+GO
+
+ALTER TABLE [dbo].[order_lines]  WITH CHECK ADD  CONSTRAINT [FK_order_id] FOREIGN KEY([order_id])
+REFERENCES [dbo].[orders] ([order_id])
+GO
+
+ALTER TABLE [dbo].[order_lines] CHECK CONSTRAINT [FK_order_id]
+GO
+
+ALTER TABLE [dbo].[order_lines]  WITH CHECK ADD  CONSTRAINT [FK_product_id] FOREIGN KEY([product_id])
+REFERENCES [dbo].[products] ([product_id])
+GO
+
+ALTER TABLE [dbo].[order_lines] CHECK CONSTRAINT [FK_product_id]
+GO
+
+ALTER TABLE [dbo].[order_lines]  WITH CHECK ADD  CONSTRAINT [check_total_sum] CHECK  (([total_sum]>(0)))
+GO
+
+ALTER TABLE [dbo].[order_lines] CHECK CONSTRAINT [check_total_sum]
+GO
+
+CREATE TABLE [dbo].[order_type](
+	[order_type_id] [int] IDENTITY(1,1) NOT NULL,
+	[order_type_nm] [varchar](255) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[order_type_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[orders](
+	[order_id] [int] IDENTITY(1,1) NOT NULL,
+	[order_dttm] [datetime2](7) NOT NULL,
+	[customer_id] [int] NOT NULL,
+	[delivery_cd] [int] NOT NULL,
+	[delivery_dt] [date] NOT NULL,
+	[delivery_address] [varchar](max) NOT NULL,
+	[comments] [varchar](max) NULL,
+	[order_type_id] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[order_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[orders]  WITH CHECK ADD  CONSTRAINT [FK_customer_id] FOREIGN KEY([customer_id])
+REFERENCES [dbo].[customers] ([customer_id])
+GO
+
+ALTER TABLE [dbo].[orders] CHECK CONSTRAINT [FK_customer_id]
+GO
+
+ALTER TABLE [dbo].[orders]  WITH CHECK ADD  CONSTRAINT [FK_order_type_id] FOREIGN KEY([order_type_id])
+REFERENCES [dbo].[order_type] ([order_type_id])
+GO
+
+ALTER TABLE [dbo].[orders] CHECK CONSTRAINT [FK_order_type_id]
+GO
+
+ALTER TABLE [dbo].[orders]  WITH CHECK ADD  CONSTRAINT [FK_orders_delivery_method] FOREIGN KEY([delivery_cd])
+REFERENCES [dbo].[delivery_method] ([delivery_method_id])
+GO
+
+ALTER TABLE [dbo].[orders] CHECK CONSTRAINT [FK_orders_delivery_method]
+GO
+
+ALTER TABLE [dbo].[orders]  WITH CHECK ADD  CONSTRAINT [check_delivery_dt] CHECK  ((datediff(month,[delivery_dt],getdate())<=(3)))
+GO
+
+ALTER TABLE [dbo].[orders] CHECK CONSTRAINT [check_delivery_dt]
+GO
+
+CREATE TABLE [dbo].[physical_customers](
+	[physical_cust_id] [int] IDENTITY(1,1) NOT NULL,
+	[full_name] [varchar](255) NOT NULL,
+	[inn] [int] NOT NULL,
+	[passport_number] [varchar](255) NOT NULL,
+	[passport_series] [varchar](255) NOT NULL,
+	[date_birth] [date] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[physical_cust_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[physical_customers]  WITH CHECK ADD  CONSTRAINT [FK_physical_cust_id] FOREIGN KEY([physical_cust_id])
+REFERENCES [dbo].[customers] ([customer_id])
+GO
+
+ALTER TABLE [dbo].[physical_customers] CHECK CONSTRAINT [FK_physical_cust_id]
+GO
+
+CREATE TABLE [dbo].[product_category](
+	[product_category_id] [int] IDENTITY(1,1) NOT NULL,
+	[product_category_nm] [varchar](255) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[product_category_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[product_type](
+	[product_type_id] [int] IDENTITY(1,1) NOT NULL,
+	[product_type_nm] [varchar](255) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[product_type_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[products](
+	[product_id] [int] IDENTITY(1,1) NOT NULL,
+	[product_name] [varchar](255) NOT NULL,
+	[weight_per_unit] [decimal](18, 3) NULL,
+	[product_category_id] [int] NOT NULL,
+	[product_type_id] [int] NOT NULL,
+	[unit] [varchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[product_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[products]  WITH CHECK ADD  CONSTRAINT [FK_product_category_id] FOREIGN KEY([product_category_id])
+REFERENCES [dbo].[product_category] ([product_category_id])
+GO
+
+ALTER TABLE [dbo].[products] CHECK CONSTRAINT [FK_product_category_id]
+GO
+
+ALTER TABLE [dbo].[products]  WITH CHECK ADD  CONSTRAINT [FK_product_type_id] FOREIGN KEY([product_type_id])
+REFERENCES [dbo].[product_type] ([product_type_id])
+GO
+
+ALTER TABLE [dbo].[products] CHECK CONSTRAINT [FK_product_type_id]
+GO
+
+----Создание индексов 
+
+--Таблица Заказчик (customers)
+CREATE UNIQUE INDEX customer_name ON dbo.customers ( customer_name DESC);
+CREATE UNIQUE INDEX customer_address ON dbo.customers  ( customer_id desc);
+
+--Таблица Заказы (orders)
+CREATE UNIQUE INDEX delivery_address ON dbo.orders (order_id desc, order_dttm desc);
+
+--Таблица Изделия (products)
+CREATE UNIQUE INDEX product_name ON dbo.products ( product_name DESC);
+
+--ДЗ по инденсам
+
+--Создание индексов для таблиц 
+--таблица Заказы (orders) полнотекствый поиск по адресу доставки
+use base_grant_sales;
+GO
+
+sp_configure 'show advanced options', 1;
+reconfigure
+sp_configure 'default full-text language';
+
+
+create fulltext catalog wwi_grant_catalog
+with accent_sensitivity = on
+as default
+authorization [dbo]
+
+go
+
+create fulltext index on dbo.orders ( delivery_address language Russian)
+key index PK_orders
+on (wwi_grant_catalog)
+with (
+	change_tracking auto,
+	stoplist = system
+);
+
+
+--Составной индекс для таблицы Заказчики (customers)
+CREATE UNIQUE INDEX name_adress ON dbo.customers (customer_name asc, customer_address asc)
+;
+
+--Индексы для таблицы Строки заказа (order_lines)
+--Колоночный индекс
+create columnstore index ix_sum_order
+on dbo.order_lines (total_sum,currency_id)
+go
+;
+
+--Индексы для таблицы Изделия (products)
+--полнотекстовы поиск по наимеованию изделия 
+sp_configure 'show advanced options', 1;
+reconfigure
+sp_configure 'default full-text language';
+
+
+create fulltext catalog wwi_grant_product_catalog
+with accent_sensitivity = on
+as default
+authorization [dbo]
+
+go
+
+create fulltext index on dbo.products (product_name language Russian)
+key index PK_products
+on (wwi_grant_product_catalog)
+with (
+	change_tracking auto,
+	stoplist = system
+);
+
+--Составной индекс 
+CREATE UNIQUE INDEX category_name ON dbo.products (category_product_id asc,product_name asc)
+;
+
+
